@@ -50,16 +50,6 @@ void Riot::Run( void )
     // TODO: Parse command line
     Initialize();
 
-    // box
-    CObject* pBox = new CObject();
-    CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
-    pBox->SetMesh( pMesh );
-    CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-    pBox->SetMaterial( pMaterial );
-    m_pSceneGraph->AddObject( pBox );
-    pBox->AddComponent( eComponentPosition );
-    //-----------------------------------------------------------------------------
-
     Timer timer; // TODO: Should the timer be a class member?
     timer.Reset();
     float fFPSTime = 0.0f; // TODO: What's the best way to calculate FPS?
@@ -173,6 +163,28 @@ void Riot::Initialize( void )
     //////////////////////////////////////////
     // Create the component manager
     m_pComponentManager = CComponentManager::GetInstance();
+
+    //////////////////////////////////////////
+    // Define scene objects
+    LoadLevel();
+}
+
+//-----------------------------------------------------------------------------
+//  LoadLevel
+//  Defines the scene objects.  Called from Initialize
+//-----------------------------------------------------------------------------
+void Riot::LoadLevel( void )
+{
+    // box
+    CObject* pBox = new CObject();
+    CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+    pBox->SetMesh( pMesh );
+    CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+    pBox->SetMaterial( pMaterial );
+    m_pSceneGraph->AddObject( pBox );
+    pBox->AddComponent( eComponentPosition );
+
+    // TODO: Load terrain
 }
 
 //-----------------------------------------------------------------------------
