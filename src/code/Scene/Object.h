@@ -63,7 +63,7 @@ protected:
     XMVECTOR    m_vPosition;
     XMVECTOR    m_vOrientation;
 
-    sint            m_pComponentIndices[eNUMCOMPONENTS];
+    uint        m_pComponentIndices[eNUMCOMPONENTS];
 
     CMesh*      m_pMesh;
     CMaterial*  m_pMaterial;

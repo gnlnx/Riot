@@ -108,6 +108,13 @@ public:
     virtual CMesh* CreateMesh( const wchar_t* szFilename ) = 0;
     
     //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from memory
+    //-----------------------------------------------------------------------------
+    virtual CMesh* CreateMesh( void* vertices, uint nVertexStride, uint nNumVertices,
+                               void* indices, uint nIndexFormat, uint nNumIndices ) = 0;
+
+    //-----------------------------------------------------------------------------
     //  CreateMaterial
     //  Creates a material from a shader file
     //-----------------------------------------------------------------------------

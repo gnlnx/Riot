@@ -85,6 +85,9 @@
     <ClCompile Include="..\code\scene\ComponentManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\code\Scene\Terrain.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\code\Main\Input.h">
@@ -149,11 +152,17 @@
     <ClInclude Include="..\code\scene\ComponentManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\code\Scene\Terrain.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl">
       <Filter>assets\shaders</Filter>
     </None>
     <None Include="..\code\ComponentSystem.txt" />
+    <None Include="..\..\assets\shaders\Terrain.hlsl">
+      <Filter>assets\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

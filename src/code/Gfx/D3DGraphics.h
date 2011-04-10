@@ -93,6 +93,14 @@ public:
     //-----------------------------------------------------------------------------
     CMesh* CreateMesh( const wchar_t* szFilename );
     
+    // TODO: Move this into base Mesh (in Mesh.h)
+    //-----------------------------------------------------------------------------
+    //  CreateMesh
+    //  Creates a mesh from memory
+    //-----------------------------------------------------------------------------
+    CMesh* CreateMesh( void* vertices, uint nVertexStride, uint nNumVertices,
+                       void* indices, uint nIndexFormat, uint nNumIndices );
+
     //-----------------------------------------------------------------------------
     //  CreateMaterial
     //  Creates a material from a shader file

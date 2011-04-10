@@ -37,6 +37,7 @@
     <ClCompile Include="..\code\scene\ComponentManager.cpp" />
     <ClCompile Include="..\code\Scene\Object.cpp" />
     <ClCompile Include="..\code\Scene\SceneGraph.cpp" />
+    <ClCompile Include="..\code\Scene\Terrain.cpp" />
     <ClCompile Include="..\PlatformDependent\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -60,11 +61,13 @@
     <ClInclude Include="..\code\scene\ComponentManager.h" />
     <ClInclude Include="..\code\Scene\Object.h" />
     <ClInclude Include="..\code\Scene\SceneGraph.h" />
+    <ClInclude Include="..\code\Scene\Terrain.h" />
     <ClInclude Include="..\Misc.h" />
     <ClInclude Include="..\PlatformDependent\Win32Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl" />
+    <None Include="..\..\assets\shaders\Terrain.hlsl" />
     <None Include="..\code\ComponentSystem.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

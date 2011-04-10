@@ -505,6 +505,125 @@ CMesh* CD3DGraphics::CreateMesh( const wchar_t* szFilename )
     return pMesh;
 }
 
+// NOTE: Currently used only to create the Terrain...should be more generic
+//-----------------------------------------------------------------------------
+//  CreateMesh
+//  Creates a mesh from memory
+//-----------------------------------------------------------------------------
+CMesh* CD3DGraphics::CreateMesh( void* vertices, uint nVertexStride, uint nNumVertices,
+                                 void* indices, uint nIndexFormat, uint nNumIndices )
+{
+    D3D11_BUFFER_DESC       bufferDesc  = { 0 };
+    D3D11_SUBRESOURCE_DATA  initData    = { 0 };
+    HRESULT                 hr          = S_OK;
+
+    // Define the input layout
+    D3D11_INPUT_ELEMENT_DESC layout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE( layout );
+    
+    //////////////////////////////////////////
+    //  Create the new mesh
+    CD3DMesh*   pMesh = new CD3DMesh();
+    pMesh->m_pDeviceContext = m_pContext;
+    pMesh->m_pWorldMatrixCB = m_pWorldCB;
+    m_pWorldCB->AddRef();
+
+    //////////////////////////////////////////
+    // Load the shader    
+    ID3DBlob*   pShaderBlob = NULL;
+    ID3DBlob*   pErrorBlob = NULL;
+    uint nCompileFlags = 0;
+#ifdef DEBUG
+    nCompileFlags = D3DCOMPILE_DEBUG;
+#endif
+    hr = D3DX11CompileFromFile(  L"Assets/Shaders/Terrain.hlsl", // Filename
+                                 NULL,           // Array of macro definitions
+                                 NULL,           // #include interface
+                                 "VS",           // Function name
+                                 "vs_4_0",       // Shader profile
+                                 nCompileFlags,  // Compile flags
+                                 0,              // Not used for shaders, only effects
+                                 NULL,           // Thread pump
+                                 &pShaderBlob,   // Compiled code
+                                 &pErrorBlob,    // Errors
+                                 NULL );         // HRESULT
+
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, (wchar_t*)pErrorBlob->GetBufferPointer(), L"Error", 0 );
+        SAFE_RELEASE( pErrorBlob );
+    }
+    SAFE_RELEASE( pErrorBlob );
+
+    // Now create the shader
+    hr = m_pDevice->CreateVertexShader( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(), NULL, &pMesh->m_pVertexShader );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, L"Couldn't create shader", L"Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+    }
+
+    //////////////////////////////////////////
+    // Create input layout
+    hr = m_pDevice->CreateInputLayout( layout, 
+                                       numElements, 
+                                       pShaderBlob->GetBufferPointer(), 
+                                       pShaderBlob->GetBufferSize(), 
+                                       &pMesh->m_pVertexLayout );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, L"Couldn't create input layout", L"Error", 0 );
+        SAFE_RELEASE( pShaderBlob );
+    } 
+    SAFE_RELEASE( pShaderBlob );
+
+    //////////////////////////////////////////
+    // Create vertex buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = nVertexStride * nNumVertices;
+    bufferDesc.BindFlags        = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+    initData.pSysMem            = vertices;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pMesh->m_pVertexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, L"Couldn't create Vertex buffer", L"Error", 0 );
+    } 
+
+    //////////////////////////////////////////
+    // Create index buffer
+    bufferDesc.Usage            = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth        = sizeof( UINT ) * nNumIndices;
+    bufferDesc.BindFlags        = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags   = 0;
+    initData.pSysMem            = indices;
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pMesh->m_pIndexBuffer );
+    if( FAILED( hr ) )
+    {
+        // TODO: Handle error gracefully
+        DebugBreak();
+        MessageBox( 0, L"Couldn't create index buffer", L"Error", 0 );
+    } 
+
+    pMesh->m_nIndexSize     = nIndexFormat;
+    pMesh->m_nIndexCount    = nNumIndices;
+    pMesh->m_nVertexSize    = nVertexStride;
+
+    return pMesh;
+}
 
 //-----------------------------------------------------------------------------
 //  CreateMaterial

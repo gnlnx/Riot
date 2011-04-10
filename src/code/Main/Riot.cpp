@@ -10,6 +10,7 @@ Purpose:    Definition of the main engine
 #include "Gfx\Graphics.h"
 #include "Scene\SceneGraph.h"
 #include "Scene\Object.h"
+#include "Scene\Terrain.h"
 #include "Gfx\View.h"
 #include "Gfx\Material.h"
 #include "Scene\ComponentManager.h"
@@ -110,7 +111,7 @@ void Riot::Run( void )
         {
             fFPS = 16.0f / fFPSTime;
             fFPSTime = 0.0f;
-            printf( "FPS: %f\n", fFPS );
+            //printf( "FPS: %f\n", fFPS );
         }
     }
     //-----------------------------------------------------------------------------
@@ -175,16 +176,29 @@ void Riot::Initialize( void )
 //-----------------------------------------------------------------------------
 void Riot::LoadLevel( void )
 {
-    // box
-    CObject* pBox = new CObject();
-    CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
-    pBox->SetMesh( pMesh );
-    CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
-    pBox->SetMaterial( pMaterial );
-    m_pSceneGraph->AddObject( pBox );
-    pBox->AddComponent( eComponentPosition );
+    //// box
+    //CObject* pBox = new CObject();
+    //CMesh*   pMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+    //pBox->SetMesh( pMesh );
+    //CMaterial* pMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/StandardVertexShader.hlsl", "PS", "ps_4_0" );
+    //pBox->SetMaterial( pMaterial );
+    //m_pSceneGraph->AddObject( pBox );
+    //pBox->AddComponent( eComponentPosition );
 
     // TODO: Load terrain
+    CTerrain* pTerrain = new CTerrain();
+    //CMesh* pTerrainMesh = m_pGraphics->CreateMesh( L"lol not loading a mesh!" );
+    CMesh* pTerrainMesh = m_pGraphics->CreateMesh( pTerrain->GetVertices(), 
+                                                   pTerrain->GetVertexStride(),
+                                                   pTerrain->GetNumVertices(),
+                                                   pTerrain->GetIndices(),
+                                                   pTerrain->GetIndexSize(),
+                                                   pTerrain->GetNumIndices() );
+    pTerrain->SetMesh( pTerrainMesh );
+    CMaterial* pTerrainMaterial = m_pGraphics->CreateMaterial( L"Assets/Shaders/Terrain.hlsl", "PS", "ps_4_0" );
+    pTerrain->SetMaterial( pTerrainMaterial );
+    m_pSceneGraph->AddObject( pTerrain );
+    pTerrain->AddComponent( eComponentPosition );
 }
 
 //-----------------------------------------------------------------------------
