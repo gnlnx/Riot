@@ -5,20 +5,16 @@ Purpose:    Defines terrain based on heightmap
 
 #include "Terrain.h"
 #include <cstdio>
+#include <xnamath.h>
 
 // CVertex
 typedef struct _CVertex
 {
     // Position
-    float X;
-    float Y;
-    float Z;
+    XMVECTOR vPos;
 
     // Color
-    float R;
-    float G;
-    float B;
-    float A;
+    XMVECTOR vColor;
 } CVertex;
 
 // CTerrain
@@ -101,14 +97,10 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
         {
             uint index  = ( m_nHeight * j ) + i;
             float height = fgetc( pFile ) / 4.0f;
-            m_pMeshVertices[ index ].X = i;
-            m_pMeshVertices[ index ].Y = height;
-            m_pMeshVertices[ index ].Z = j;
 
-            m_pMeshVertices[ index ].R = height / 256.0f;
-            m_pMeshVertices[ index ].G = 0.0f;
-            m_pMeshVertices[ index ].B = 0.0f;
-            m_pMeshVertices[ index ].A = 1.0f;
+            m_pMeshVertices[ index ].vPos = XMVectorSet( (float)i, height, (float)j, 1.0f );
+            m_pMeshVertices[ index ].vColor = XMVectorSet( height / 256.0f, 0.0f, 0.0f, 1.0f );
+
             m_nNumVertices++;
         }
     }
@@ -124,14 +116,14 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
             uint k = (m_nHeight * jj) + ii;
 
             // Triangle 1
-            m_pMeshIndices[ index     ] = k;
-            m_pMeshIndices[ index + 1 ] = m_nWidth + k;
-            m_pMeshIndices[ index + 2 ] = m_nWidth + (k + 1);
+            m_pMeshIndices[ index     ] = k;                  // top left
+            m_pMeshIndices[ index + 1 ] = m_nWidth + k;       // bottom left
+            m_pMeshIndices[ index + 2 ] = m_nWidth + (k + 1); // bottom right
 
             // Triangle 2
-            m_pMeshIndices[ index + 3 ] = k;
-            m_pMeshIndices[ index + 4 ] = m_nWidth + (k + 1);
-            m_pMeshIndices[ index + 5 ] = k + 1;
+            m_pMeshIndices[ index + 3 ] = k;                  // top left
+            m_pMeshIndices[ index + 4 ] = m_nWidth + (k + 1); // bottom right
+            m_pMeshIndices[ index + 5 ] = k + 1;              // top right
 
             index += 6;
         }
