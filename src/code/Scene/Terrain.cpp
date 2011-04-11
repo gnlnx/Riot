@@ -87,16 +87,19 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
     m_pMeshVertices = new CVertex[ nSize ];
     m_pMeshIndices = new uint[ (m_nWidth - 1) * (m_nHeight - 1) * 3 * 2 ];
 
-    // Vertices
+    // Read in heightmap info
     FILE* pFile;
     pFile = fopen( szFilename, "rb" );
+    uint nBytesCopied = fread( m_ppHeightMap, sizeof(byte), nSize, pFile );
+    fclose( pFile );
 
+    // Vertices
     for( uint j = 0; j < m_nHeight; ++j )
     {
         for( uint i = 0; i < m_nWidth; ++i )
         {
             uint index  = ( m_nHeight * j ) + i;
-            float height = fgetc( pFile ) / 4.0f;
+            float height = m_ppHeightMap[ index ] / 4.0f;
 
             m_pMeshVertices[ index ].vPos = XMVectorSet( (float)i, height, (float)j, 1.0f );
             m_pMeshVertices[ index ].vColor = XMVectorSet( height / 256.0f, 0.0f, 0.0f, 1.0f );
@@ -104,8 +107,6 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
             m_nNumVertices++;
         }
     }
-
-    fclose( pFile );
 
     // Indices
     uint index = 0;
