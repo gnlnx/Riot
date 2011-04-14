@@ -79,6 +79,32 @@ void Riot::Run( void )
             pObject->AddComponent( eComponentPosition );
         }
 
+        // Move camera
+        if( m_pInput->IsKeyDown( 'W' ) ) // forward
+        {
+            m_pMainView->TranslateZ( m_fElapsedTime * 5.0f );
+        }
+        if( m_pInput->IsKeyDown( 'A' ) ) // left
+        {
+            m_pMainView->TranslateX( -m_fElapsedTime * 5.0f );
+        }
+        if( m_pInput->IsKeyDown( 'S' ) ) // back
+        {
+            m_pMainView->TranslateZ( -m_fElapsedTime * 5.0f );
+        }
+        if( m_pInput->IsKeyDown( 'D' ) ) // right
+        {
+            m_pMainView->TranslateX( m_fElapsedTime * 5.0f );
+        }
+        if( m_pInput->IsKeyDown( 'E' ) ) // up
+        {
+            m_pMainView->TranslateY( m_fElapsedTime * 5.0f );
+        }
+        if( m_pInput->IsKeyDown( 'Q' ) ) // down
+        {
+            m_pMainView->TranslateY( -m_fElapsedTime * 5.0f );
+        }
+
         //-------------------------- Frame -------------------------
 
         //////////////////////////////////////////

@@ -52,10 +52,10 @@ void CObject::AddComponent( eComponentType nType )
 //-----------------------------------------------------------------------------
 void CObject::Update( float fDeltaTime )
 {
-    // TODO: TEMP
-    m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
+    // TODO: temporarily get rid of rotating objects behavior
+    //m_vPosition = m_vPosition + XMVectorSet( fDeltaTime * 0.1f, fDeltaTime * 0.1f, 0.0f, 0.0f );
 
-    m_vOrientation = XMQuaternionMultiply( m_vOrientation, XMQuaternionRotationAxis( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), 0.1f * fDeltaTime ) );
+    //m_vOrientation = XMQuaternionMultiply( m_vOrientation, XMQuaternionRotationAxis( XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), 0.1f * fDeltaTime ) );
 
     if( m_pMesh )
     {
