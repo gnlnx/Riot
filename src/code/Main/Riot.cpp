@@ -37,6 +37,7 @@ CWindow*            Riot::m_pMainWindow     = NULL;
 CGraphics*          Riot::m_pGraphics       = NULL;
 CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
+CView*              Riot::m_pMainView       = NULL;
 
 bool                Riot::m_bRunning        = true;
     
@@ -158,8 +159,8 @@ void Riot::Initialize( void )
 
     //////////////////////////////////////////
     // Create the main view
-    CView* pView = new CView();
-    m_pSceneGraph->AddView( pView );
+    m_pMainView = new CView();
+    m_pSceneGraph->AddView( m_pMainView );
 
     //////////////////////////////////////////
     // Create the component manager

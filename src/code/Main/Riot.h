@@ -62,6 +62,7 @@ private:
     static CGraphics*   m_pGraphics;
     static CSceneGraph* m_pSceneGraph;
     static CComponentManager*   m_pComponentManager;
+    static CView*       m_pMainView;
 
     static bool         m_bRunning;
 };

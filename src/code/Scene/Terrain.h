@@ -8,8 +8,8 @@ Purpose:    Defines terrain based on heightmap
 #include "Common.h"
 #include "Scene\Object.h"
 
-// CVertex
-typedef struct _CVertex CVertex;
+// CTerrainVertex
+class CTerrainVertex;
 
 // CTerrain
 class CTerrain: public CObject
@@ -88,7 +88,7 @@ private:
     uint m_nWidth;
     uint m_nHeight;  // TODO: rename to something more appropriate
     
-    CVertex* m_pMeshVertices;
+    CTerrainVertex* m_pMeshVertices;
     uint m_nVertexStride;
     uint m_nNumVertices;
     uint* m_pMeshIndices;

@@ -7,18 +7,17 @@ Purpose:    Defines terrain based on heightmap
 #include <cstdio>
 #include <xnamath.h>
 
-// CVertex
-typedef struct _CVertex
+// CTerrainVertex
+class CTerrainVertex
 {
+public:
     // Position
     XMVECTOR vPos;
-
     // Color
     XMVECTOR vColor;
-} CVertex;
+};
 
 // CTerrain
-
 static const uint s_nDefaultWidth = 256;
 static const uint s_nDefaultHeight = 256;
 
@@ -28,7 +27,7 @@ CTerrain::CTerrain( void )
     , m_nWidth( 0 )
     , m_nHeight( 0 )
     , m_pMeshVertices( NULL )
-    , m_nVertexStride( sizeof(CVertex) )
+    , m_nVertexStride( sizeof(CTerrainVertex) )
     , m_nNumVertices( 0 )
     , m_pMeshIndices( NULL )
     , m_nIndexFormat( 32 )
@@ -43,7 +42,7 @@ CTerrain::CTerrain( const char* szFilename, const uint nWidth, const uint nHeigh
     , m_nWidth( 0 )
     , m_nHeight( 0 )
     , m_pMeshVertices( NULL )
-    , m_nVertexStride( sizeof(CVertex) )
+    , m_nVertexStride( sizeof(CTerrainVertex) )
     , m_nNumVertices( 0 )
     , m_pMeshIndices( NULL )
     , m_nIndexFormat( 32 )
@@ -84,14 +83,19 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
     m_nHeight = nHeight;
     uint nSize = m_nWidth * m_nHeight;
     m_ppHeightMap = new byte[ nSize ];
-    m_pMeshVertices = new CVertex[ nSize ];
+    m_pMeshVertices = new CTerrainVertex[ nSize ];
     m_pMeshIndices = new uint[ (m_nWidth - 1) * (m_nHeight - 1) * 3 * 2 ];
 
     // Read in heightmap info
     FILE* pFile;
-    pFile = fopen( szFilename, "rb" );
-    uint nBytesCopied = fread( m_ppHeightMap, sizeof(byte), nSize, pFile );
+    errno_t errFile = fopen_s( &pFile, szFilename, "rb" );
+    uint nBytesCopied = fread_s( m_ppHeightMap, nSize * sizeof(byte), sizeof(byte), nSize, pFile );
     fclose( pFile );
+    // If reading heightmap fails, set the heightmap to all zeroes
+    if( nBytesCopied != nSize )
+    {
+        memset( m_ppHeightMap, 0, nSize );
+    }
 
     // Vertices
     for( uint j = 0; j < m_nHeight; ++j )
@@ -109,6 +113,18 @@ void CTerrain::SetHeightMap( const char* szFilename, const uint nWidth, const ui
     }
 
     // Indices
+    //
+    //    k-----------(k + 1)--------------(k + 2)------...------(k + (width-1))
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //  width------width + (k + 1)------width + (k + 2)--...--width + (k + n)
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //    |              |                    |                     |
+    //
     uint index = 0;
     for( uint jj = 0; jj < (m_nHeight - 1); ++jj )
     {
