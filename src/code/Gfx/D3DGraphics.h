@@ -81,6 +81,9 @@ public:
     //  Sets the view projection constant buffer
     //-----------------------------------------------------------------------------
     void SetViewProj( const void* pView, const void* pProj );
+
+    ID3D11Device* GetDevice( void ) { return m_pDevice; }
+    ID3D11DeviceContext* GetDeviceContext( void ) { return m_pContext; }
     
 public:
     /***************************************\

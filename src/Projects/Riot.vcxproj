@@ -32,6 +32,7 @@
     <ClCompile Include="..\code\Main\Math.cpp" />
     <ClCompile Include="..\code\Main\Memory.cpp" />
     <ClCompile Include="..\code\Main\Riot.cpp" />
+    <ClCompile Include="..\code\Main\UI.cpp" />
     <ClCompile Include="..\code\Main\Window.cpp" />
     <ClCompile Include="..\code\scene\Component.cpp" />
     <ClCompile Include="..\code\scene\ComponentManager.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="..\code\Main\RiotMath.h" />
     <ClInclude Include="..\code\Main\Timer.h" />
     <ClInclude Include="..\code\Main\Types.h" />
+    <ClInclude Include="..\code\Main\UI.h" />
     <ClInclude Include="..\code\Main\Window.h" />
     <ClInclude Include="..\code\Scene\Component.h" />
     <ClInclude Include="..\code\scene\ComponentManager.h" />
@@ -68,6 +70,7 @@
   <ItemGroup>
     <None Include="..\..\assets\shaders\StandardVertexShader.hlsl" />
     <None Include="..\..\assets\shaders\Terrain.hlsl" />
+    <None Include="..\..\assets\shaders\UI.hlsl" />
     <None Include="..\code\ComponentSystem.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

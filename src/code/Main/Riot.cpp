@@ -14,6 +14,7 @@ Purpose:    Definition of the main engine
 #include "Gfx\View.h"
 #include "Gfx\Material.h"
 #include "Scene\ComponentManager.h"
+#include "UI.h"
 
 #if defined( OS_WINDOWS )
 #include "PlatformDependent\Win32Window.h"
@@ -38,6 +39,7 @@ CGraphics*          Riot::m_pGraphics       = NULL;
 CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 CView*              Riot::m_pMainView       = NULL;
+UI*                 Riot::m_pUI             = NULL;
 
 bool                Riot::m_bRunning        = true;
     
@@ -80,29 +82,59 @@ void Riot::Run( void )
         }
 
         // Move camera
+        float fCameraSpeed = 10.0f;
+        float fCameraRotationSpeed = fCameraSpeed * 0.15f;
         if( m_pInput->IsKeyDown( 'W' ) ) // forward
         {
-            m_pMainView->TranslateZ( m_fElapsedTime * 5.0f );
+            if( m_pInput->IsKeyDown( VK_CONTROL ) )
+            {
+                m_pMainView->RotateX( -m_fElapsedTime * fCameraRotationSpeed );
+            }
+            else
+            {
+                m_pMainView->TranslateZ( m_fElapsedTime * fCameraSpeed );
+            }
         }
         if( m_pInput->IsKeyDown( 'A' ) ) // left
         {
-            m_pMainView->TranslateX( -m_fElapsedTime * 5.0f );
+            if( m_pInput->IsKeyDown( VK_CONTROL ) )
+            {
+                m_pMainView->RotateY( -m_fElapsedTime * fCameraRotationSpeed );
+            }
+            else
+            {
+                m_pMainView->TranslateX( -m_fElapsedTime * fCameraSpeed );
+            }
         }
         if( m_pInput->IsKeyDown( 'S' ) ) // back
         {
-            m_pMainView->TranslateZ( -m_fElapsedTime * 5.0f );
+            if( m_pInput->IsKeyDown( VK_CONTROL ) )
+            {
+                m_pMainView->RotateX( m_fElapsedTime * fCameraRotationSpeed );
+            }
+            else
+            {
+                m_pMainView->TranslateZ( -m_fElapsedTime * fCameraSpeed );
+            }
         }
         if( m_pInput->IsKeyDown( 'D' ) ) // right
         {
-            m_pMainView->TranslateX( m_fElapsedTime * 5.0f );
+            if( m_pInput->IsKeyDown( VK_CONTROL ) )
+            {
+                m_pMainView->RotateY( m_fElapsedTime * fCameraRotationSpeed );
+            }
+            else
+            {
+                m_pMainView->TranslateX( m_fElapsedTime * fCameraSpeed );
+            }
         }
         if( m_pInput->IsKeyDown( 'E' ) ) // up
         {
-            m_pMainView->TranslateY( m_fElapsedTime * 5.0f );
+            m_pMainView->TranslateY( m_fElapsedTime * fCameraSpeed );
         }
         if( m_pInput->IsKeyDown( 'Q' ) ) // down
         {
-            m_pMainView->TranslateY( -m_fElapsedTime * 5.0f );
+            m_pMainView->TranslateY( -m_fElapsedTime * fCameraSpeed );
         }
 
         //-------------------------- Frame -------------------------
@@ -115,6 +147,11 @@ void Riot::Run( void )
         //////////////////////////////////////////
         // Render
         m_pGraphics->PrepareRender();
+
+        // draw some text
+        m_pUI->PutText( 0, 0, "Hi Omar" );
+
+        // draw scene
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
         m_pGraphics->Render( ppObjects, nNumRenderObjects );
@@ -180,6 +217,10 @@ void Riot::Initialize( void )
     m_pInput = new RiotInput();
 
     //////////////////////////////////////////
+    // Create the UI
+    m_pUI = new UI();
+
+    //////////////////////////////////////////
     //  Get the scene graph
     m_pSceneGraph = CSceneGraph::GetInstance();
 
@@ -237,6 +278,7 @@ void Riot::Shutdown( void )
     SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
+    SAFE_DELETE( m_pUI );
 
     //////////////////////////////////////////
     // This is the last thing called
