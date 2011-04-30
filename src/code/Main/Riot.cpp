@@ -148,13 +148,16 @@ void Riot::Run( void )
         // Render
         m_pGraphics->PrepareRender();
 
-        // draw some text
-        m_pUI->PutText( 0, 0, "Hi Omar" );
-
         // draw scene
         uint nNumRenderObjects = 0;
         CObject** ppObjects = m_pSceneGraph->GetRenderObjects( &nNumRenderObjects );
         m_pGraphics->Render( ppObjects, nNumRenderObjects );
+
+        // draw some text
+        char szFPS[ 255 ];
+        sprintf_s( szFPS, 255, "fps: %f", fFPS );
+        m_pUI->PutText( 10, 10, szFPS );
+
         m_pGraphics->Present();
 
         //----------------------- End of frame ---------------------
