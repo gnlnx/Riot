@@ -230,6 +230,10 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
     for( uint i = 0; i < nNumChar; ++i )
     {
         float fCurrentScreenX = m_fScreenX + ( i * fFontWidth );
+        float fLeftX = fCurrentScreenX;
+        float fRightX = fCurrentScreenX + (fCharWidth * fScaleFactor);
+        float fTopY = m_fScreenY + fFontHeight;
+        float fBottomY = m_fScreenY;
 
         char cCurrentChar = szText[i];
         uint nAsciiPos = cCurrentChar - 32;
@@ -246,13 +250,13 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
         UIVertex pVertices[] = 
         {
             // Triangle 1
-            { XMVectorSet( fCurrentScreenX, m_fScreenY, 0.0f, 1.0f ),                            XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
-            { XMVectorSet( fCurrentScreenX, m_fScreenY + fFontHeight, 0.0f, 1.0f ),              XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y0, 0.0f, 0.0f ) }, // left top
-            { XMVectorSet( fCurrentScreenX + (fCharWidth * fScaleFactor), m_fScreenY + fFontHeight, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
+            { XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
+            { XMVectorSet( fLeftX,  fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y0, 0.0f, 0.0f ) }, // left top
+            { XMVectorSet( fRightX, fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
             // Triangle 2
-            { XMVectorSet( fCurrentScreenX, m_fScreenY, 0.0f, 1.0f ),                            XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
-            { XMVectorSet( fCurrentScreenX + (fCharWidth * fScaleFactor), m_fScreenY + fFontHeight, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
-            { XMVectorSet( fCurrentScreenX + (fCharWidth * fScaleFactor), m_fScreenY, 0.0f, 1.0f ),               XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y1, 0.0f, 0.0f ) }, // right bottom
+            { XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
+            { XMVectorSet( fRightX, fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
+            { XMVectorSet( fRightX, fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y1, 0.0f, 0.0f ) }, // right bottom
         };
         unsigned int nNumVertices = sizeof( pVertices ) / sizeof( pVertices[0] );
 
