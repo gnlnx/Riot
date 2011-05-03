@@ -10,6 +10,7 @@ Purpose:    User interface...renders to a separate target
 #include "Riot.h"
 #include "Gfx\D3DGraphics.h"
 
+//////////////////////////////////////////
 // UI vertex definition
 typedef struct _UIVertex
 {
@@ -18,6 +19,7 @@ typedef struct _UIVertex
     XMVECTOR vTexcoord;  // xy = uv...zw = ??
 } UIVertex;
 
+//////////////////////////////////////////
 // UI vertex element description
 D3D11_INPUT_ELEMENT_DESC pVertexLayout[] =
 {
@@ -27,6 +29,7 @@ D3D11_INPUT_ELEMENT_DESC pVertexLayout[] =
 };
 UINT nNumVertexLayoutElements = ARRAYSIZE( pVertexLayout );
 
+//////////////////////////////////////////
 // static members
 float                      UI::m_fScreenX      = 0.0f;
 float                      UI::m_fScreenY      = 0.0f;
@@ -41,7 +44,10 @@ ID3D11ShaderResourceView*  UI::m_pFontSRV      = NULL;
 ID3D11BlendState*          UI::m_pFontBlend    = NULL;
 wchar_t*                   UI::m_szShaderFile  = L"Assets/Shaders/UI.hlsl";
 
-// constructor
+//-----------------------------------------------------------------------------
+//  Initialize
+//  Define shaders, input layout, and font texture
+//-----------------------------------------------------------------------------
 void UI::Initialize( void )
 {
     HRESULT hr = S_OK;
@@ -205,6 +211,10 @@ void UI::Initialize( void )
     }
 }
 
+//-----------------------------------------------------------------------------
+//  Destroy
+//  Release the memory allocated on Init
+//-----------------------------------------------------------------------------
 void UI::Destroy( void )
 {
     SAFE_RELEASE( m_pVertexShader );
@@ -215,6 +225,10 @@ void UI::Destroy( void )
     SAFE_RELEASE( m_pFontSRV );
 }
 
+//-----------------------------------------------------------------------------
+//  PutText
+//  Draw szText at (nLeft, nTop)
+//-----------------------------------------------------------------------------
 void UI::PutText( uint nLeft, uint nTop, char* szText )
 {
     float fScaleFactor = 2.0f;
