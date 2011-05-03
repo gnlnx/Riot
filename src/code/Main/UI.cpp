@@ -28,6 +28,10 @@ D3D11_INPUT_ELEMENT_DESC pVertexLayout[] =
 UINT nNumVertexLayoutElements = ARRAYSIZE( pVertexLayout );
 
 // static members
+float                      UI::m_fScreenX      = 0.0f;
+float                      UI::m_fScreenY      = 0.0f;
+ID3D11Device*              UI::m_pDevice       = NULL;
+ID3D11DeviceContext*       UI::m_pContext      = NULL;
 ID3D11VertexShader*        UI::m_pVertexShader = NULL;
 ID3D11PixelShader*         UI::m_pPixelShader  = NULL;
 ID3D11InputLayout*         UI::m_pInputLayout  = NULL;
@@ -38,9 +42,7 @@ ID3D11BlendState*          UI::m_pFontBlend    = NULL;
 wchar_t*                   UI::m_szShaderFile  = L"Assets/Shaders/UI.hlsl";
 
 // constructor
-UI::UI( void )
-    : m_fScreenX( 0.0f )
-    , m_fScreenY( 0.0f )
+void UI::Initialize( void )
 {
     HRESULT hr = S_OK;
 
@@ -203,7 +205,7 @@ UI::UI( void )
     }
 }
 
-UI::~UI( void )
+void UI::Destroy( void )
 {
     SAFE_RELEASE( m_pVertexShader );
     SAFE_RELEASE( m_pPixelShader );

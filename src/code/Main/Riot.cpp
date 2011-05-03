@@ -39,7 +39,6 @@ CGraphics*          Riot::m_pGraphics       = NULL;
 CSceneGraph*        Riot::m_pSceneGraph     = NULL;
 CComponentManager*  Riot::m_pComponentManager = NULL;
 CView*              Riot::m_pMainView       = NULL;
-UI*                 Riot::m_pUI             = NULL;
 
 bool                Riot::m_bRunning        = true;
     
@@ -156,11 +155,13 @@ void Riot::Run( void )
         // draw some text
         char szFPS[ 255 ];
         sprintf_s( szFPS, 255, "fps: %f", fFPS );
-        m_pUI->PutText( 10, 10, szFPS );
+        //m_pUI->PutText( 10, 10, szFPS );
+        UI::PutText( 10, 10, szFPS );
 
         XMVECTOR vCamPos = m_pMainView->GetPosition();
         sprintf_s( szFPS, 255, "Camera: (%f, %f, %f)", XMVectorGetX(vCamPos), XMVectorGetY(vCamPos), XMVectorGetZ(vCamPos) );
-        m_pUI->PutText( 10, 30, szFPS );
+        //m_pUI->PutText( 10, 30, szFPS );
+        UI::PutText( 10, 30, szFPS );
 
         m_pGraphics->Present();
 
@@ -225,7 +226,7 @@ void Riot::Initialize( void )
 
     //////////////////////////////////////////
     // Create the UI
-    m_pUI = new UI();
+    UI::Initialize();
 
     //////////////////////////////////////////
     //  Get the scene graph
@@ -285,7 +286,7 @@ void Riot::Shutdown( void )
     SAFE_RELEASE( m_pInput );
     SAFE_RELEASE( m_pGraphics );
     SAFE_RELEASE( m_pMainWindow );
-    SAFE_DELETE( m_pUI );
+    UI::Destroy();
 
     //////////////////////////////////////////
     // This is the last thing called

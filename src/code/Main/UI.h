@@ -23,17 +23,20 @@ struct ID3D11BlendState;
 class UI
 {
 public:
+
+    static void Initialize( void );
+    static void PutText( uint nLeft, uint nTop, char* szText );
+    static void Destroy( void );
+
+private:
     UI( void );
     ~UI( void );
 
-    void PutText( uint nLeft, uint nTop, char* szText );
+    static float m_fScreenX;
+    static float m_fScreenY;
 
-private:
-    float m_fScreenX;
-    float m_fScreenY;
-
-    ID3D11Device* m_pDevice;
-    ID3D11DeviceContext* m_pContext;
+    static ID3D11Device* m_pDevice;
+    static ID3D11DeviceContext* m_pContext;
     static ID3D11VertexShader* m_pVertexShader;
     static ID3D11PixelShader* m_pPixelShader;
     static ID3D11InputLayout* m_pInputLayout;

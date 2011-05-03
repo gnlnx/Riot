@@ -15,7 +15,6 @@ class CWindow;
 class CGraphics;
 class CView;
 class CComponentManager;
-class UI;
 
 class Riot
 {
@@ -64,7 +63,6 @@ private:
     static CSceneGraph* m_pSceneGraph;
     static CComponentManager*   m_pComponentManager;
     static CView*       m_pMainView;
-    static UI*          m_pUI;
 
     static bool         m_bRunning;
 };
