@@ -220,13 +220,18 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
     float fFontWidth = ( ( 950.0f / 95.0f ) / 1024.0f ) * fScaleFactor;
     float fFontHeight = (20.0f / 768.0f) * fScaleFactor;
     uint nNumChar = strlen( szText );
-    ID3D11Buffer* pVertexBuffer = NULL;
 
     // adjust screen coords to have (0, 0) at the top left
     // and increase X left -> right and Y top -> bottom
     m_fScreenX = 2.0f * ( nLeft / 1024.0f ) - 1.0f;  // [-1, 1]
     m_fScreenY = -2.0f * ( nTop / 768.0f ) + 1.0f - fFontHeight; // [1-font_height, -1-font_height]
+
+    // Vertices info
+    uint nNumVertices = nNumChar * 6;
+    UIVertex* pVertices = new UIVertex[ nNumVertices ];
+    uint j = 0;
     
+    // Create quads for the string
     for( uint i = 0; i < nNumChar; ++i )
     {
         float fCurrentScreenX = m_fScreenX + ( i * fFontWidth );
@@ -242,49 +247,67 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
         float fTexcoord_y0 = 0.0f;                        // top
         float fTexcoord_y1 = 1.0f;                        // bottom
 
-        // Create vertex buffer
-        D3D11_BUFFER_DESC       bufferDesc  = { 0 };
-        D3D11_SUBRESOURCE_DATA  initData    = { 0 };
-        HRESULT                 hr          = S_OK;
+        j = i * 6;
 
-        UIVertex pVertices[] = 
-        {
-            // Triangle 1
-            { XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
-            { XMVectorSet( fLeftX,  fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y0, 0.0f, 0.0f ) }, // left top
-            { XMVectorSet( fRightX, fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
-            // Triangle 2
-            { XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f ) }, // left bottom
-            { XMVectorSet( fRightX, fTopY, 0.0f, 1.0f ),    XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f ) }, // right top
-            { XMVectorSet( fRightX, fBottomY, 0.0f, 1.0f ), XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f ), XMVectorSet( fTexcoord_x1, fTexcoord_y1, 0.0f, 0.0f ) }, // right bottom
-        };
-        unsigned int nNumVertices = sizeof( pVertices ) / sizeof( pVertices[0] );
-
-        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        bufferDesc.ByteWidth = sizeof( UIVertex ) * nNumVertices;
-        bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        bufferDesc.CPUAccessFlags = 0;
-        initData.pSysMem = pVertices;
-
-        hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pVertexBuffer );
-
-        // Set the shaders
-        m_pContext->VSSetShader( m_pVertexShader, NULL, 0 );
-        m_pContext->PSSetShader( m_pPixelShader, NULL, 0 );
-
-        // Set shader stuff
-        m_pContext->PSSetSamplers( 0, 1, &m_pFontSampler );
-        m_pContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
-        m_pContext->OMSetBlendState( m_pFontBlend, 0, 0xFFFFFFFF );
-
-        // Draw text
-        unsigned int nStrides[] = { sizeof( UIVertex ) };
-        unsigned int nOffsets[] = { 0 };
-        m_pContext->IASetInputLayout( m_pInputLayout );
-        m_pContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, nStrides, nOffsets );
-        m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-        m_pContext->Draw( nNumVertices, 0 );
-    
-        SAFE_RELEASE( pVertexBuffer );
+        // Triangle 1
+        // left bottom
+        pVertices[ j + 0 ].vPos      = XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f );
+        pVertices[ j + 0 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 0 ].vTexcoord = XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f );
+        // left top
+        pVertices[ j + 1 ].vPos      = XMVectorSet( fLeftX,  fTopY, 0.0f, 1.0f );
+        pVertices[ j + 1 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 1 ].vTexcoord = XMVectorSet( fTexcoord_x0, fTexcoord_y0, 0.0f, 0.0f );
+        // right top
+        pVertices[ j + 2 ].vPos      = XMVectorSet( fRightX, fTopY, 0.0f, 1.0f );
+        pVertices[ j + 2 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 2 ].vTexcoord = XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f );
+        // Triangle 2
+        // left bottom
+        pVertices[ j + 3 ].vPos      = XMVectorSet( fLeftX,  fBottomY, 0.0f, 1.0f );
+        pVertices[ j + 3 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 3 ].vTexcoord = XMVectorSet( fTexcoord_x0, fTexcoord_y1, 0.0f, 0.0f );
+        // right top
+        pVertices[ j + 4 ].vPos      = XMVectorSet( fRightX, fTopY, 0.0f, 1.0f );
+        pVertices[ j + 4 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 4 ].vTexcoord = XMVectorSet( fTexcoord_x1, fTexcoord_y0, 0.0f, 0.0f );
+        // right bottom
+        pVertices[ j + 5 ].vPos      = XMVectorSet( fRightX, fBottomY, 0.0f, 1.0f );
+        pVertices[ j + 5 ].vColor    = XMVectorSet( 1.0f, 1.0f, 0.0f, 1.0f );
+        pVertices[ j + 5 ].vTexcoord = XMVectorSet( fTexcoord_x1, fTexcoord_y1, 0.0f, 0.0f );
     }
+
+    // Create vertex buffer
+    D3D11_BUFFER_DESC       bufferDesc    = { 0 };
+    D3D11_SUBRESOURCE_DATA  initData      = { 0 };
+    HRESULT                 hr            = S_OK;
+    ID3D11Buffer*           pVertexBuffer = NULL;
+
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof( UIVertex ) * nNumVertices;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    initData.pSysMem = pVertices;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pVertexBuffer );
+
+    // Set the shaders
+    m_pContext->VSSetShader( m_pVertexShader, NULL, 0 );
+    m_pContext->PSSetShader( m_pPixelShader, NULL, 0 );
+
+    // Set shader stuff
+    m_pContext->PSSetSamplers( 0, 1, &m_pFontSampler );
+    m_pContext->PSSetShaderResources( 0, 1, &m_pFontSRV );
+    m_pContext->OMSetBlendState( m_pFontBlend, 0, 0xFFFFFFFF );
+
+    // Draw text
+    unsigned int nStrides[] = { sizeof( UIVertex ) };
+    unsigned int nOffsets[] = { 0 };
+    m_pContext->IASetInputLayout( m_pInputLayout );
+    m_pContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, nStrides, nOffsets );
+    m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    m_pContext->Draw( nNumVertices, 0 );
+
+    SAFE_RELEASE( pVertexBuffer );
+    SAFE_DELETE_ARRAY( pVertices );
 }

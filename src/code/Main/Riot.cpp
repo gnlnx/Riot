@@ -158,6 +158,10 @@ void Riot::Run( void )
         sprintf_s( szFPS, 255, "fps: %f", fFPS );
         m_pUI->PutText( 10, 10, szFPS );
 
+        XMVECTOR vCamPos = m_pMainView->GetPosition();
+        sprintf_s( szFPS, 255, "Camera: (%f, %f, %f)", XMVectorGetX(vCamPos), XMVectorGetY(vCamPos), XMVectorGetZ(vCamPos) );
+        m_pUI->PutText( 10, 30, szFPS );
+
         m_pGraphics->Present();
 
         //----------------------- End of frame ---------------------
