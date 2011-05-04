@@ -13,6 +13,7 @@ Modified by:    Kyle Weicht
 #include "Gfx\Graphics.h"
 #include "ComponentManager.h"
 #include <memory> // for memcpy
+#include "Main\UI.h"
 #define new DEBUG_NEW
 
 // CSceneGraph constructor
@@ -94,6 +95,10 @@ void CSceneGraph::UpdateObjects( float fDeltaTime )
 
     // Update the current view
     m_pActiveView->Update( fDeltaTime );
+
+    char szNumObj[ 255 ];
+    sprintf_s( szNumObj, 255, "Total objects in scengraph: %d", m_nNumTotalObjects );
+    UI::AddString( 10, 50, szNumObj );
 }
 
 //-----------------------------------------------------------------------------
@@ -104,6 +109,10 @@ CObject** CSceneGraph::GetRenderObjects( uint* nCount )
 {
     memcpy( m_ppRenderObjects, m_ppAllSceneObjects, sizeof( CObject* ) * m_nNumTotalObjects );
     *nCount = m_nNumRenderObjects = m_nNumTotalObjects;
+
+    char szNumObj[ 255 ];
+    sprintf_s( szNumObj, 255, "Total objects rendered: %d", m_nNumTotalObjects );
+    UI::AddString( 10, 70, szNumObj );
 
     return m_ppRenderObjects;
 }

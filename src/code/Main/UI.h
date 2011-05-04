@@ -21,6 +21,15 @@ struct ID3D11ShaderResourceView;
 struct ID3D11BlendState;
 struct ID3D11Buffer;
 
+//////////////////////////////////////////
+// UI item definition
+typedef struct _UIString
+{
+    uint nLeft;
+    uint nTop;
+    char szText[255];
+} UIString;
+
 class UI
 {
 //---------------------------------------------------------------------------------
@@ -32,10 +41,20 @@ public:
     //-----------------------------------------------------------------------------
     static void Initialize( void );
     //-----------------------------------------------------------------------------
-    //  PutText
+    //  AddText
+    //  Add some text to the list of strings
+    //-----------------------------------------------------------------------------
+    static void AddString( uint nLeft, uint nTop, const char* szText );
+    //-----------------------------------------------------------------------------
+    //  DrawString
     //  Draw szText at (nLeft, nTop)
     //-----------------------------------------------------------------------------
-    static void PutText( uint nLeft, uint nTop, char* szText );
+    static void DrawString( uint nLeft, uint nTop, const char* szText );
+    //-----------------------------------------------------------------------------
+    //  Draw()
+    //  Draw all the strings
+    //-----------------------------------------------------------------------------
+    static void Draw( void );
     //-----------------------------------------------------------------------------
     //  Destroy
     //  Release the memory allocated on Init
@@ -59,6 +78,9 @@ private:
     static ID3D11BlendState* m_pFontBlend;
     static ID3D11Buffer* m_pVertexBuffer;
     static wchar_t* m_szShaderFile;
+
+    static UIString* m_pUIStrings;
+    static uint m_nNumStrings;
 };
 
 #endif // _UI_H_

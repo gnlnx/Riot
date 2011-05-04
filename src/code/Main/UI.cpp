@@ -46,6 +46,10 @@ ID3D11Buffer*              UI::m_pVertexBuffer = NULL;
 wchar_t*                   UI::m_szShaderFile  = L"Assets/Shaders/UI.hlsl";
 static const uint          gs_nMaxNumChars     = 255 * 6;
 
+static const uint          gs_nMaxNumStrings   = 100;
+UIString*                  UI::m_pUIStrings    = new UIString[ gs_nMaxNumStrings ];
+uint                       UI::m_nNumStrings   = 0;
+
 //-----------------------------------------------------------------------------
 //  Initialize
 //  Define shaders, input layout, and font texture
@@ -252,10 +256,40 @@ void UI::Destroy( void )
 }
 
 //-----------------------------------------------------------------------------
-//  PutText
+//  AddText
+//  Add some text to the list of strings
+//-----------------------------------------------------------------------------
+void UI::AddString( uint nLeft, uint nTop, const char* szText )
+{
+    m_pUIStrings[ m_nNumStrings ].nLeft = nLeft;
+    m_pUIStrings[ m_nNumStrings ].nTop = nTop;
+    strcpy_s( m_pUIStrings[ m_nNumStrings ].szText, 255, szText );
+    m_nNumStrings++;
+}
+
+//-----------------------------------------------------------------------------
+//  Draw()
+//  Draw all the strings
+//-----------------------------------------------------------------------------
+void UI::Draw( void )
+{
+    // draw all strings
+    for( uint i = 0; i < m_nNumStrings; ++i )
+    {
+        uint nLeft = m_pUIStrings[ i ].nLeft;
+        uint nTop = m_pUIStrings[ i ].nTop;
+        const char* szText = m_pUIStrings[ i ].szText;
+        DrawString( nLeft, nTop, szText );
+    }
+
+    m_nNumStrings = 0;
+}
+
+//-----------------------------------------------------------------------------
+//  DrawString
 //  Draw szText at (nLeft, nTop)
 //-----------------------------------------------------------------------------
-void UI::PutText( uint nLeft, uint nTop, char* szText )
+void UI::DrawString( uint nLeft, uint nTop, const char* szText )
 {
     float fScaleFactor = 2.0f;
     float fCharWidth = (950.0f / 95.0f) / 950.0f;

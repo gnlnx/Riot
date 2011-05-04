@@ -154,12 +154,11 @@ void Riot::Run( void )
 
         // draw some text
         char szFPS[ 255 ];
-        sprintf_s( szFPS, 255, "fps: %f", fFPS );
-        UI::PutText( 10, 10, szFPS );
-
         XMVECTOR vCamPos = m_pMainView->GetPosition();
         sprintf_s( szFPS, 255, "Camera: (%f, %f, %f)", XMVectorGetX(vCamPos), XMVectorGetY(vCamPos), XMVectorGetZ(vCamPos) );
-        UI::PutText( 10, 30, szFPS );
+        UI::AddString( 10, 30, szFPS );
+
+        UI::Draw();
 
         m_pGraphics->Present();
 
@@ -181,8 +180,9 @@ void Riot::Run( void )
         {
             fFPS = 16.0f / fFPSTime;
             fFPSTime = 0.0f;
-            //printf( "FPS: %f\n", fFPS );
         }
+        sprintf_s( szFPS, 255, "fps: %f", fFPS );
+        UI::AddString( 10, 10, szFPS );
     }
     //-----------------------------------------------------------------------------
 
