@@ -19,6 +19,7 @@ struct ID3D11SamplerState;
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
 struct ID3D11BlendState;
+struct ID3D11Buffer;
 
 class UI
 {
@@ -56,6 +57,7 @@ private:
     static ID3D11Texture2D* m_pFontTexture;
     static ID3D11ShaderResourceView* m_pFontSRV;
     static ID3D11BlendState* m_pFontBlend;
+    static ID3D11Buffer* m_pVertexBuffer;
     static wchar_t* m_szShaderFile;
 };
 

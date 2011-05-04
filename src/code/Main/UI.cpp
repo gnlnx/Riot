@@ -42,7 +42,9 @@ ID3D11SamplerState*        UI::m_pFontSampler  = NULL;
 ID3D11Texture2D*           UI::m_pFontTexture  = NULL;
 ID3D11ShaderResourceView*  UI::m_pFontSRV      = NULL;
 ID3D11BlendState*          UI::m_pFontBlend    = NULL;
+ID3D11Buffer*              UI::m_pVertexBuffer = NULL;
 wchar_t*                   UI::m_szShaderFile  = L"Assets/Shaders/UI.hlsl";
+static const uint          gs_nMaxNumChars     = 255 * 6;
 
 //-----------------------------------------------------------------------------
 //  Initialize
@@ -209,6 +211,29 @@ void UI::Initialize( void )
         DebugBreak();
         MessageBox( 0, L"Failed to create the blend sampler", L"Error", 0 );
     }
+    //////////////////////////////////////////
+    // Init the vertex buffer
+    // Create vertex buffer
+    D3D11_BUFFER_DESC       bufferDesc      = { 0 };
+    D3D11_SUBRESOURCE_DATA  initData        = { 0 };
+    ID3D11Buffer*           pVertexBuffer   = NULL;
+    UIVertex*               pVertices       = new UIVertex[ gs_nMaxNumChars ];
+    
+    for( uint i = 0; i < gs_nMaxNumChars; ++i )
+    {
+        pVertices[ i ].vPos = XMVectorSet( 0.0f, 0.0f, 0.0f, 1.0f );
+        pVertices[ i ].vColor = XMVectorSet( 0.0f, 0.0f, 1.0f, 1.0f );
+        pVertices[ i ].vTexcoord = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+    }
+
+    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bufferDesc.ByteWidth = sizeof( UIVertex ) * gs_nMaxNumChars;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    initData.pSysMem = pVertices;
+
+    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &m_pVertexBuffer );
+    SAFE_DELETE_ARRAY( pVertices );
 }
 
 //-----------------------------------------------------------------------------
@@ -223,6 +248,7 @@ void UI::Destroy( void )
     SAFE_RELEASE( m_pFontSampler );
     SAFE_RELEASE( m_pFontTexture );
     SAFE_RELEASE( m_pFontSRV );
+    SAFE_RELEASE( m_pVertexBuffer );
 }
 
 //-----------------------------------------------------------------------------
@@ -235,7 +261,7 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
     float fCharWidth = (950.0f / 95.0f) / 950.0f;
     float fFontWidth = ( ( 950.0f / 95.0f ) / 1024.0f ) * fScaleFactor;
     float fFontHeight = (20.0f / 768.0f) * fScaleFactor;
-    uint nNumChar = strlen( szText );
+    uint nNumChars = strlen( szText );
 
     // adjust screen coords to have (0, 0) at the top left
     // and increase X left -> right and Y top -> bottom
@@ -243,12 +269,12 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
     m_fScreenY = -2.0f * ( nTop / 768.0f ) + 1.0f - fFontHeight; // [1-font_height, -1-font_height]
 
     // Vertices info
-    uint nNumVertices = nNumChar * 6;
+    uint nNumVertices = nNumChars * 6;
     UIVertex* pVertices = new UIVertex[ nNumVertices ];
     uint j = 0;
     
     // Create quads for the string
-    for( uint i = 0; i < nNumChar; ++i )
+    for( uint i = 0; i < nNumChars; ++i )
     {
         float fCurrentScreenX = m_fScreenX + ( i * fFontWidth );
         float fLeftX = fCurrentScreenX;
@@ -293,19 +319,12 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
         pVertices[ j + 5 ].vTexcoord = XMVectorSet( fTexcoord_x1, fTexcoord_y1, 0.0f, 0.0f );
     }
 
-    // Create vertex buffer
-    D3D11_BUFFER_DESC       bufferDesc    = { 0 };
-    D3D11_SUBRESOURCE_DATA  initData      = { 0 };
-    HRESULT                 hr            = S_OK;
-    ID3D11Buffer*           pVertexBuffer = NULL;
-
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof( UIVertex ) * nNumVertices;
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-    initData.pSysMem = pVertices;
-
-    hr = m_pDevice->CreateBuffer( &bufferDesc, &initData, &pVertexBuffer );
+    // Update the vertex buffer
+    D3D11_MAPPED_SUBRESOURCE pMappedVB;
+    m_pContext->Map( m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &pMappedVB );
+    UIVertex* pMappedVertices = ( UIVertex* )pMappedVB.pData;
+    memcpy_s( pMappedVertices, gs_nMaxNumChars * sizeof( UIVertex ), pVertices, nNumChars * 6 * sizeof( UIVertex ) );
+    m_pContext->Unmap( m_pVertexBuffer, 0 );
 
     // Set the shaders
     m_pContext->VSSetShader( m_pVertexShader, NULL, 0 );
@@ -320,10 +339,9 @@ void UI::PutText( uint nLeft, uint nTop, char* szText )
     unsigned int nStrides[] = { sizeof( UIVertex ) };
     unsigned int nOffsets[] = { 0 };
     m_pContext->IASetInputLayout( m_pInputLayout );
-    m_pContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, nStrides, nOffsets );
+    m_pContext->IASetVertexBuffers( 0, 1, &m_pVertexBuffer, nStrides, nOffsets );
     m_pContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     m_pContext->Draw( nNumVertices, 0 );
 
-    SAFE_RELEASE( pVertexBuffer );
     SAFE_DELETE_ARRAY( pVertices );
 }
